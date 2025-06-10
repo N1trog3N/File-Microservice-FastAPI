@@ -1,0 +1,27 @@
+version: '3.9'
+
+services:
+  minio:
+    image: minio/minio
+    container_name: minio
+    command: server /data
+    env_file:
+      - .env
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./minio_data:/data
+
+  file_service:
+    container_name: file_service
+    build: .
+    ports:
+      - "8090:8090"
+    env_file:
+      - .env
+    depends_on:
+      minio:
+        condition: service_started
+    volumes:
+      - ./:/app
+    restart: always
